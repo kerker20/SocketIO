@@ -2,7 +2,12 @@ const chatForm = document.getElementById('chat-form');
 const chatMessages = document.querySelector('.chat-messages');
 const roomName = document.getElementById('room-name');
 const userList = document.getElementById('users');
+const privateRoom = document.querySelector('.privateRoom')
 let myID = "";
+let private = false;
+let privateName = "";
+let privateUser = "";
+var divs = "";
 // Get username and room from URL
 const { username, room } = Qs.parse(location.search, {
     ignoreQueryPrefix: true,
@@ -19,7 +24,7 @@ function timeoutFunction() {
     socket.emit("typing", false);
 }
 
-$('.input').keyup(function() {
+$('.input').keyup(function () {
     typing = true;
     socket.emit('typing', typing);
     console.log('happening');
@@ -27,7 +32,7 @@ $('.input').keyup(function() {
     timeout = setTimeout(timeoutFunction, 1000);
 });
 
-socket.on('typing', function(data) {
+socket.on('typing', function (data) {
     if (data) {
         $('#typing').show().delay(300).fadeOut();
     } else {
@@ -73,6 +78,20 @@ chatForm.addEventListener('submit', (e) => {
     // Get message text
     let msg = e.target.elements.msg.value;
 
+    if (private) {
+        socket.emit("private", {
+            private: privateName,
+            user: username,
+            msg: msg,
+            to: privateUser,
+            from: username
+        });
+    } else {
+        socket.emit('chatMessage', msg);
+    }
+    $(".message").val("");
+    $(".message").focus();
+
     msg = msg.trim();
 
     if (!msg) {
@@ -80,12 +99,41 @@ chatForm.addEventListener('submit', (e) => {
     }
 
     // Emit message to server
-    socket.emit('chatMessage', msg);
+
 
     // Clear input
     e.target.elements.msg.value = '';
     e.target.elements.msg.focus();
 });
+
+socket.on("private", function (data) {
+    console.log(private);
+    console.log(data);
+    console.log(data.to);
+    console.log(data.from);
+    console.log(data.msg);
+    console.log(data.private);
+    console.log(data.user);
+    console.log(data.time);
+
+    if (private == true) {
+        if (data.user === username) {
+            $('.privateRoom').append(`<small class='type' href=''>${data.user}&nbsp;<span class='text-success'>${data.time}</span></small> <div class="you">
+            <p class="text">${data.msg}</p>
+          </div>`);
+        } else {
+            $('.privateRoom').append(`<a class='other' href='index.html' style='text-decoration:none;color:black;font-size:small;' data-toggle="tooltip" data-html="true" title="Click here for private message"">${data.user}&nbsp;<span class='text-success'>${data.time}</span></a> <div class="others mt-1">
+            <p class="text1">${data.msg}</p>
+          </div>`);
+        }
+
+    }
+    privateRoom.scrollTop = privateRoom.scrollHeight;
+
+});
+
+
+
 
 
 // Output message to DOM
@@ -118,24 +166,39 @@ function outputUsers(users) {
     users.forEach((user) => {
         const stats = `&nbsp;&nbsp;<span><img src='https://i.ibb.co/nkBzrPF/removal-ai-tmp-609cb7c64018a.png' width='10' ></span>`;
         if (user.username == username) {
-            // alert("hi")
-            $('#users').append(`<li class="p-2 text-dark mt-2" style="border-radius:5rem;width:fit-content;background-color:white;"><small class='text-muted'>You -</small>&nbsp;${user.username}${stats}</li>`);
+            $('#users').append(`<li class="p-2 text-dark mt-2" user-name="${user.username}" user-id="${user.id}" style="border-radius:5rem;width:fit-content;background-color:white;"><small class='text-muted'>You -</small>&nbsp;${user.username}${stats}</li>`);
         } else {
-            $('#users').append(`<li class="p-2  mt-2 " style="border-radius:5rem;width:fit-content;background-color:#f56c9e;"><i class="fas fa-user-friends"></i><input type='hidden' id='idOther' value='${user.id}'>&nbsp;<button onclick="private()" id='btn-fr' class='btn-fr'>${user.username}${stats}</button></li>`);
+            $('#users').append(`<li class="p-2 mt-2 private-user" user-name="${user.username}" user-id="${user.id}" style="border-radius:5rem;width:fit-content;background-color:#f56c9e;"><i class="fas fa-user-friends"></i><input type='hidden' id='idOther' value='${user.id}'>&nbsp;<button id='btn-fr' class='btn-fr'>${user.username}${stats}</button></li>`);
         }
     });
 }
 
-function private() {
-    var x = document.getElementById("private-card");
-    if (x.style.display == "none") {
-        x.style.display = "block";
-        $('.chat-messages').hide();
-        $('#privateChat').append(`<h5>${username}</h5>`);
 
+console.log(private);
+
+$("#users").on("click", ".private-user", function () {
+    privateName = $(this).attr("user-name");
+    privateUser = $(this).attr("user-id");
+    console.log(privateUser);
+
+    private = true;
+    showPrivateCard()
+    console.log(private);
+    $(".room-username").html($(this).attr("user-name"));
+
+});
+
+
+function showPrivateCard() {
+    var x = document.getElementById("private-card");
+    if (x.style.display === "none") {
+        x.style.display = "block";
+        $('.privateRoom').empty();
+        private = true;
     } else {
         x.style.display = "none";
-        $('.chat-messages').show();
+        $('.privateRoom').empty();
+        private = false;
     }
 }
 
@@ -145,5 +208,5 @@ document.getElementById('leave-btn').addEventListener('click', () => {
     const leaveRoom = confirm('Are you sure you want to migrate?');
     if (leaveRoom) {
         window.location = '../index.html';
-    } else {}
+    } else { }
 });

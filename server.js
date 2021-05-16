@@ -48,9 +48,10 @@ io.on('connection', socket => {
     socket.broadcast.to(user.room).emit('typing', typing);
   });
 
+  const moment = require('moment');
   socket.on("private", function (data) {
-    io.sockets.sockets[data.to].emit("private", { from: socket.id, to: data.to, msg: data.msg });
-    socket.emit("private", { from: socket.id, to: data.to, msg: data.msg });
+    io.sockets.sockets[data.to].emit("private", { from: socket.id, to: data.to, msg: data.msg, private: data.private, user: data.user, time: moment().format('h:mm a') });
+    socket.emit("private", { from: socket.id, to: data.to, msg: data.msg, private: data.private, user: data.user, time: moment().format('h:mm a') });
   });
 
 
