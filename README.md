@@ -1,4 +1,8 @@
-# Omegle App
+# Omegle App 
+
+--how to run--
+
+-- terminal--
 
 npm i -y
 npm i express socket.io moment
