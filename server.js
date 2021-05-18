@@ -28,7 +28,7 @@ io.on('connection', socket => {
     socket.join(user.room);
 
     // Welcome current user
-    socket.emit('bago user', formatMessage(botName, 'Welcome to Om3gle!'));
+    socket.emit('bago user', formatMessage(botName, 'Thank you for joining Om3gle!'));
 
     // Broadcast when a user connects
     socket.to(user.room).emit('bago user', formatMessage(botName, `${user.username} has joined the chat`)
