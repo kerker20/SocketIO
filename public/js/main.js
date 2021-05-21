@@ -10,8 +10,11 @@ let privateUser = "";
 var divs = "";
 var hidetype = $('#typingMes');
 var hidetype1 = $('.typo');
+<<<<<<< HEAD
 var hidePriv = $('.typingMessages');
 var hidePri = $('.typose');
+=======
+>>>>>>> b8c2b5b793dbdfcd074dc7b0065b7a38e386268d
 // Get username and room from URL
 const { username, room } = Qs.parse(location.search, {
     ignoreQueryPrefix: true,
@@ -157,6 +160,7 @@ socket.on("private", function (data) {
     console.log(data.time);
 
     if (private == true) {
+
 
         $('#typingMes').detach('');
         $('.typo').detach('');
