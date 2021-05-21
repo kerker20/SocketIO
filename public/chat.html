@@ -164,28 +164,54 @@
                         </div>
 
                     </main>
-                    <div style="max-width: 500px;margin-left:200px;" class="p-2">
-                        <div class="container" id="typing" style="display: none;margin-top:-30px;position: absolute;">
+                    <div class="row justify-content-center">
+
+                    
+                <div class="container">
+                    <div style="max-width: 500px;margin-left:200px;position: relative;" class="p-2 privv">
+                        <div class="container typingMessages" id="typingMessages" style="display: none;margin-top:-30px;">
 
                             <div class="ticontainer mb-2" style="float: left;">
                                 <div class="tiblock">
                                     <div class="tidot"></div>
                                     <div class="tidot"></div>
                                     <div class="tidot"></div>
-                                    <span><small style="color: #e30955;">&nbsp;Someone is typing...</small></span>
+                                </div>
+                            </div>
+                            <span><small class="typose" style="color: #e30955;float: right;"></small></span>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="container">
+                    <div style="max-width: 500px;margin-left:200px;position: relative;" class="p-2 roomPri">
+                        <div class="container typingMes" id="typingMes" style="display: none;margin-top:-30px;">
+
+                            <div class="ticontainer mb-2" style="float: left;">
+                                <div class="tiblock">
+                                    <div class="tidot"></div>
+                                    <div class="tidot"></div>
+                                    <div class="tidot"></div>
                                 </div>
                             </div>
 
+                            <span><small class="typo mr-auto" style="color: #e30955;float: right;"></small></span>
+
                         </div>
+                        <div class="container">
                         <form id="chat-form">
                             <div class="input-group input-group-sm mb-3 w-10">
                                 <input class="form-control input" style="margin-left:1%;margin-bottom:35px;border-radius:1rem;width:60px;border:1px solid rgba(84, 184, 184);text-align:left;" id="msg" type="text" placeholder="Enter Message" required autocomplete="off" />
                                 <div class="input-group-append input-group-sm bg-transparent" style="max-height: 35px;">
-                                    <span class="input-group-text bg-transparent" style="border:none;" id="basic-addon2"> <button class="btn"><i class="fas fa-paper-plane" style="color:blue"></i>Send</button></span>
+                                    <span class="input-group-text bg-transparent" style="border:none;" id="basic-addon2"> <button class="btn" type="submit"><i class="fas fa-paper-plane" style="color:blue"></i>Send</button></span>
                                 </div>
                             </div>
                         </form>
                     </div>
+                    </div>
+                </div>
+            </div>
+                
 
                 </div>
 

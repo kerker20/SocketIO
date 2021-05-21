@@ -28,7 +28,7 @@ io.on('connection', socket => {
     socket.join(user.room);
 
     // Welcome current user
-    socket.emit('bago user', formatMessage(botName, 'Welcome to Om3gle!'));
+    socket.emit('bago user', formatMessage(botName, 'Thank you for joining Om3gle!'));
 
     // Broadcast when a user connects
     socket.to(user.room).emit('bago user', formatMessage(botName, `${user.username} has joined the chat`)
@@ -45,7 +45,17 @@ io.on('connection', socket => {
 
   socket.on('typing', function (typing) {
     const user = getCurrentUser(socket.id);
-    socket.broadcast.to(user.room).emit('typing', typing);
+    socket.broadcast.to(user.room).emit('typing', typing, { user: typing.username });
+  });
+
+  socket.on('typed', function (data) {
+    // console.log(data.typed);
+    // console.log(data.username);
+    io.to(data.to).emit('typed', { typed: data.typed, username: data.username });
+    // socket.emit('typed', { from: socket.id, to: data.to, typed: data.typed, user: data.username });
+    // // io.sockets.sockets[data.to].emit('typed', { from: socket.id, typed: data.typed, user: data.username, to: data.to });
+    // socket.emit('typed', { from: socket.id, typed: data.typed, user: data.username, to: data.to });
+
   });
 
   const moment = require('moment');

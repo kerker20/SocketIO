@@ -8,6 +8,10 @@ let private = false;
 let privateName = "";
 let privateUser = "";
 var divs = "";
+var hidetype = $('#typingMes');
+var hidetype1 = $('.typo');
+var hidePriv = $('.typingMessages');
+var hidePri = $('.typose');
 // Get username and room from URL
 const { username, room } = Qs.parse(location.search, {
     ignoreQueryPrefix: true,
@@ -26,19 +30,56 @@ function timeoutFunction() {
 
 $('.input').keyup(function () {
     typing = true;
-    socket.emit('typing', typing);
+    socket.emit('typing', { typing: typing, user: username });
     console.log('happening');
+    // console.log(username);
     clearTimeout(timeout);
     timeout = setTimeout(timeoutFunction, 1000);
 });
 
+
 socket.on('typing', function (data) {
+    console.log(data);
     if (data) {
-        $('#typing').show().delay(300).fadeOut();
+        $('.typingMes').show().delay(300).fadeOut();
+        // console.log(data.user);
+        $('.typo').html('&nbsp;' + data.user + ' is typing...').show().delay(300).fadeOut();
+
     } else {
         $('.typing').text("");
     }
 });
+
+
+function timeoutFunctions() {
+    typed = false;
+    socket.emit("typed", false);
+}
+
+$('#msg').keyup(function () {
+    typed = true;
+    console.log(typed);
+    socket.emit('typed', { typed: typed, username: username, to: privateUser, from: username });
+    console.log('happening');
+    // console.log(username);
+    clearTimeout(timeout);
+    timeout = setTimeout(timeoutFunctions, 1000);
+});
+
+
+socket.on('typed', function (typed) {
+    console.log(typed.username);
+    console.log(typed.typed);
+    if (typed.typed) {
+        console.log(typed.username);
+        $('.typingMessages').show().delay(300).fadeOut();
+        // console.log(data.user);
+        $('.typose').html('&nbsp;' + typed.username + ' is typing...').show().delay(300).fadeOut();
+    } else {
+        $('.typing').text("");
+    }
+});
+
 
 
 socket.on("user data", (data) => {
@@ -54,7 +95,6 @@ socket.on('roomUsers', ({ room, users }) => {
     outputRoomName(room);
     outputUsers(users);
 });
-
 
 
 // Message from server
@@ -117,6 +157,9 @@ socket.on("private", function (data) {
     console.log(data.time);
 
     if (private == true) {
+
+        $('#typingMes').detach('');
+        $('.typo').detach('');
         if (data.user === username) {
             $('.privateRoom').append(`<small class='type' href=''>${data.user}&nbsp;<span class='text-success'>${data.time}</span></small> <div class="you">
             <p class="text">${data.msg}</p>
@@ -126,13 +169,21 @@ socket.on("private", function (data) {
             <p class="text1">${data.msg}</p>
           </div>`);
         }
-
+    } else {
+        $('.roomPri').prepend(hidetype);
+        $('.roomPri').prepend(hidetype1);
+        if (data.user === username) {
+            $('.privateRoom').append(`<small class='type' href=''>${data.user}&nbsp;<span class='text-success'>${data.time}</span></small> <div class="you">
+            <p class="text">${data.msg}</p>
+          </div>`);
+        } else {
+            $('.privateRoom').append(`<a class='other' href='index.html' style='text-decoration:none;color:black;font-size:small;' data-toggle="tooltip" data-html="true" title="Click here for private message"">${data.user}&nbsp;<span class='text-success'>${data.time}</span></a> <div class="others mt-1">
+            <p class="text1">${data.msg}</p>
+          </div>`);
+        }
     }
     privateRoom.scrollTop = privateRoom.scrollHeight;
-
 });
-
-
 
 
 
@@ -195,10 +246,19 @@ function showPrivateCard() {
         x.style.display = "block";
         $('.privateRoom').empty();
         private = true;
+        $('#typingMes').detach('');
+        $('.typo').detach('');
+        $('.privv').prepend(hidePriv);
+        $('.privv').prepend(hidePri);
+
     } else {
         x.style.display = "none";
         $('.privateRoom').empty();
         private = false;
+        $('.roomPri').prepend(hidetype);
+        $('.roomPri').prepend(hidetype1);
+        $('.typingMessages').detach('');
+        $('.typose').detach('');
     }
 }
 
